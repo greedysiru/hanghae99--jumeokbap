@@ -5,9 +5,12 @@ from selenium.common.exceptions import NoSuchElementException
 from pymongo import MongoClient
 import requests
 
+# foodlist DB에 저장
+# client = MongoClient('내AWS아이피', 27017, username="아이디", password="비밀번호")
+# db = client.dbsparta_plus_week3
 
-client = MongoClient('내AWS아이피', 27017, username="아이디", password="비밀번호")
-db = client.dbsparta_plus_week3
+client = MongoClient('localhost', 27017)
+db = client.foodlist
 
 driver = webdriver.Chrome('./chromedriver')
 
@@ -17,19 +20,60 @@ url = "https://menutong.com/bbs/board.php?bo_table=sangto"
 driver.get(url)
 time.sleep(5)
 
-req = driver.page_source
+# 더 많은 페이지 크롤링
+for i in range(4, 13):
+
+    req = driver.page_source
+
+    soup = BeautifulSoup(req, 'html.parser')
+
+    # 각 식당에 해당하는 카드 선택
+    places = soup.select("#list-body > div")
+    print(len(places))
+
+    # 식당 이미지 src, 이름, 주소, 카테고리 가져오기
+    for place in places:
+        img = place.find('img')
+        img_src = img['src']
+        title = place.select_one(
+            "div.list-text > div.list-text > div.text-muted.font-12 > font:nth-child(2) > b").text
+        category = place.select_one(
+            "div.list-text > div.list-text > div.text-muted.font-12 > font:nth-child(5) > b").text
+        address = place.select_one(
+            "div.list-text > div.list-text > div.text-muted.font-12 > span:nth-child(9)").text
+
+        # 문자열 인덱싱
+        address = address[5:]
+
+        # Geocoding 연결
+        headers = {
+            "X-NCP-APIGW-API-KEY-ID": "7byx1qe56r",
+            "X-NCP-APIGW-API-KEY": "uaDsC6DxP4EMYpy0vbcsFWg5RlsbkRmEMUh95cIb"
+        }
+        r = requests.get(
+            f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={address}", headers=headers)
+        response = r.json()
+
+        # 주소에 오류 없는 경우만 출력
+        if response["status"] == "OK":
+            if len(response["addresses"]) > 0:
+                x = float(response["addresses"][0]["x"])
+                y = float(response["addresses"][0]["y"])
+                print(title, address, category, img_src, x, y)
+                # foodlist DB에 저장
+                doc = {
+                    "title": title,
+                    "address": address,
+                    "category": category,
+                    "img_src": img_src,
+                    "mapx": x,
+                    "mapy": y}
+                db.foodlist.insert_one(doc)
+            else:
+                print(title, address, "좌표를 찾지 못했습니다")
+                print(address)
+    btn_more = driver.find_element_by_css_selector(
+        "#fboardlist > div.list-page.text-center > ul > li:nth-child(%d) > a" % (i))
+    btn_more.click()
+    time.sleep(5)
 driver.quit()
-
-soup = BeautifulSoup(req, 'html.parser')
-# 각 식당에 해당하는 카드 선택
-places = soup.select("list-body > div:nth-child(2) > div > div")
-print(len(places))
-
-# 식당 이름, 주소, 카테고리 가져오기
-for place in places:
-    title = place.select_one("strong.box_module_title").text
-    address = place.select_one(
-        "div.box_module_cont > div > div > div.mil_inner_spot > span.il_text").text
-    category = place.select_one(
-        "div.box_module_cont > div > div > div.mil_inner_kind > span.il_text").text
-    print(title, address, category)
