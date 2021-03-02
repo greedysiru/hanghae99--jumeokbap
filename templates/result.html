@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>주.먹.밥!</title>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+  <!-- JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
+  <script>
+    // DB에서 food 받아오기
+    function get_food() {
+      $.ajax({
+        type: "GET",
+        url: '/result',
+        data: {},
+        success: function (response) {
+          let foods = response["foods"]
+          let food = foods[0]
+          console.log(food)
+          food_info(food)
+        }
+      }
+      );
+    }
+
+    // food에서 각 정보 넣고 좌표 변환 함수에 좌표 보내기
+    function food_info(food) {
+      console.log(food)
+      let address = food['address'];
+      let category = food['category'];
+      let img_src = food['img_src'];
+      let title = food['title'];
+      let mapx = food['mapx'];
+      let mapy = food['mapy'];
+      $('#food-address').text(address);
+      $('#food-category').text(category);
+      $('#food-title').text(title);
+      $('#food-image').attr("src", img_src);
+      // map_maker(mapx, mapy);
+    }
+
+
+    // 지도 만들기 함수
+
+
+
+    get_food()
+
+  </script>
+
+
+</head>
+<!-- 결과 페이지 hero -->
+
+<body>
+  <section class="hero is-success ">
+    <div class="hero-body">
+      <div class="">
+        <!-- 결과 페이지 타이틀 -->
+        <p class="title">
+          주.먹.밥!
+        </p>
+        <!-- 결과 페이지 서브 타이틀 -->
+        <p class="subtitle">
+          나왔습니다😘
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 맛집 정보 카드-->
+  <div class="tile is-ancestor">
+    <div class="tile is-4 is-vertical is-parent">
+      <div class="tile is-child box">
+        <p class="title" id="food-title">title</p>
+        <p id="food-address">address</p>
+      </div>
+      <div class="tile is-child box">
+        <p class="title" id="food-category">종류</p>
+      </div>
+    </div>
+    <div class="tile is-parent">
+      <div class="tile is-child box">
+        <p class="title">map, image</p>
+        <img src="#" id="food-image">
+
+        <div id="map">
+          <div class="banner">
+            <div class="d-flex flex-column align-items-center"
+              style="background-color: rgba(0,0,0,0.5);width: 100%;height: 100%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=7byx1qe56r&submodules=geocoder"></script>
+</body>
+
+</html>
