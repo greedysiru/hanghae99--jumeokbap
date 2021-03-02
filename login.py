@@ -44,9 +44,9 @@ def login():
     return render_template('index.html', msg=msg)
 
 
-@app.route('/register')
+@app.route('/signup')
 def register():
-    return render_template('register.html')
+    return render_template('signup.html')
 
 
 #################################
