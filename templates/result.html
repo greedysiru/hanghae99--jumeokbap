@@ -132,7 +132,8 @@
         success: function (response) {
           let foods = response["foods"]
           // 난수 생성 후 랜덤 음식점 가져오기
-          let random = Math.floor(Math.random() * 10);
+          let num = foods.length
+          let random = Math.floor(Math.random() * num);
           let food = foods[random]
           // 음식 결과 출력 함수 호출
           food_info(food)
