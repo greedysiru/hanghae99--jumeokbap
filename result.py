@@ -11,18 +11,8 @@ client = MongoClient('localhost', 27017)
 db = client.foodlist
 
 
-# 결과페이지, 진자 변수 넘기기
-@app.route('/resultpage')
-def main():
-    foodlist = list(db.foodlist.find({}, {"_id": False}))
-    return render_template("result.html", foodlist = foodlist)
 
-# 음식 리스트 반환 API
-@app.route('/result', methods=["GET"])
-def get_result():
-    foods = list(db.foodlist.find({}, {"_id": False}))
 
-    return jsonify({'result': 'success', 'foods': foods})
 
 
 
