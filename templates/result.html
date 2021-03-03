@@ -16,7 +16,112 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
+  <style>
+    .is-child {
+      padding: 30px;
+    }
+    .is-parent{
+      width: 100%;
+    }
 
+    #food-link {
+      
+    }
+    #food-image{
+      width: 500px;
+    }
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+
+    .food_list {
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .food_list img {
+      width: 200px;
+    }
+
+    .rows a {
+
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+    }
+
+    .rows {
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      ;
+      margin-top: 20px;
+      margin-left: 20px;
+      padding: 15px;
+      width: 96.3%;
+      border-radius: 10px;
+    }
+
+    .col_text {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .food_list_title {
+      font-size: 34px;
+    }
+
+    .food_list_category {
+      font-size: 24px;
+    }
+
+    .is-ancestor {
+      padding: 20px;
+      width:100%;
+    }
+
+    .tile .is-parent {
+      width: 45%;
+    }
+
+    .food_list_main_title {
+      margin-left: 20px;
+      font-size: 40px;
+    }
+
+    .category {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    @keyframes scale-up-center {
+      0% {
+        transform: scale(1);
+      }
+
+      100% {
+
+        transform: scale(1.025);
+      }
+    }
+
+    .hovereffect:hover {
+      animation: scale-up-center 0.5s ease-in-out forwards;
+      will-change: transform;
+    }
+
+
+    img {
+      border-radius: 10px;
+    }
+  </style>
   <script>
     // DB에서 food 받아오기
     function get_food() {
@@ -26,13 +131,42 @@
         data: {},
         success: function (response) {
           let foods = response["foods"]
-          let food = foods[0]
-          console.log(food)
+          // 난수 생성 후 랜덤 음식점 가져오기
+          let random = Math.floor(Math.random() * 10);
+          let food = foods[random]
+          // 음식 결과 출력 함수 호출
           food_info(food)
         }
       }
       );
     }
+
+    // function food_list(foods) {
+    //   for (let i = 0; i < foods.length; i++) {
+    //     let food_list_title = foods[i]['title'];
+    //     let food_list_category = foods[i]['category'];
+    //     let food_list_a_href = foods[i]['a_href'];
+    //     let food_address = foods[i]['address'];
+    //     let food_list_img_src = foods[i]['img_src'];
+    //     let food_address_select = food_address.substring(0, 2);
+    //     if (food_address_select === "서울") {
+    //       console.log(food_address)
+    //       let html_temp = `    <div class="rows">
+    //                              <a href="${food_list_a_href}" class="food_list_a" target="_blank">
+    //                             <div class="col">
+    //                               <img src="${food_list_img_src}" class="food_list_pic">
+    //                             </div>
+
+    //                               <div class="col_text"> <span class="food_list_title">${food_list_title}</span>
+    //                                 <span class="food_list_category">${food_list_category}</span> <span class=food_list_address>${food_address}</span>
+    //                               </div>
+    //                             </a>
+    //                           </div>`
+    //       $(".food_list").append(html_temp);
+    //     }
+
+    //   }
+    // }
 
     // food에서 각 정보 넣고 좌표 변환 함수에 좌표 보내기
     function food_info(food) {
@@ -41,19 +175,15 @@
       let category = food['category'];
       let img_src = food['img_src'];
       let title = food['title'];
-      let mapx = food['mapx'];
-      let mapy = food['mapy'];
+      let tel = food['tel'];
+      let a_href = food['a_href'];
       $('#food-address').text(address);
       $('#food-category').text(category);
       $('#food-title').text(title);
       $('#food-image').attr("src", img_src);
-      // map_maker(mapx, mapy);
+      $('#food-tel').text(tel);
+      $('#food-atag').attr("href", a_href);
     }
-
-
-    // 지도 만들기 함수
-
-
 
     get_food()
 
@@ -61,6 +191,7 @@
 
 
 </head>
+
 <!-- 결과 페이지 hero -->
 
 <body>
@@ -85,29 +216,56 @@
       <div class="tile is-child box">
         <p class="title" id="food-title">title</p>
         <p id="food-address">address</p>
+        <p id="food-tel">tel</p>
       </div>
-      <div class="tile is-child box">
+      <div class="tile is-child box category">
         <p class="title" id="food-category">종류</p>
       </div>
     </div>
-    <div class="tile is-parent">
-      <div class="tile is-child box">
-        <p class="title">map, image</p>
-        <img src="#" id="food-image">
+    <div class="tile is-parent hovereffect">
+      <a href="#" id="food-atag" target="_blank">
+        <div class="tile is-child box" >
+          <p class="title"></p>
 
-        <div id="map">
-          <div class="banner">
-            <div class="d-flex flex-column align-items-center"
-              style="background-color: rgba(0,0,0,0.5);width: 100%;height: 100%;">
-            </div>
+          <img src="#" id="food-image">
+          <div id="food-link">
+            마음에 드시나요?
+            <p> 음식 정보를 드릴게요!</p>
+
           </div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 
-  <script type="text/javascript"
-    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=7byx1qe56r&submodules=geocoder"></script>
+  <!-- 더 많은 메뉴 추천-->
+
+  <div class="food_list">
+    <span class="food_list_main_title">더 많은 메뉴를 추천드립니다!</span>
+    {% for list in foodlist %}
+    {% set list_href = list["a_href"] %}
+    {% set list_img = list["img_src"] %}
+    {% set list_title = list["title"] %}
+    {% set list_category = list["category"]%}
+    {% set list_address = list["address"] %}
+    {% set select_address = list_address[0:2] %}
+    {% if select_address == "서울" %}
+    <div class="rows hovereffect">
+      <a href="{{list_href}}" class="food_list_a" target="_blank">
+        <div class="col">
+          <img src="{{list_img}}" class="food_list_pic">
+        </div>
+
+        <div class="col_text"> <span class="food_list_title">{{list_title}}</span>
+          <span class="food_list_category">{{list_category}}</span> <span
+            class=food_list_address>{{list_address}}</span>
+        </div>
+      </a>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+
 </body>
 
 </html>

@@ -31,14 +31,18 @@ for i in range(4, 13):
     places = soup.select("#list-body > div")
     print(len(places))
 
-    # 식당 이미지 src, 이름, 주소, 카테고리 가져오기
+    # 식당 이미지 src, href, 이름, 카테고리, 번호, 주소 가져오기
     for place in places:
         img = place.find('img')
         img_src = img['src']
+        a = place.find('a')
+        a_href = a['href']
         title = place.select_one(
             "div.list-text > div.list-text > div.text-muted.font-12 > font:nth-child(2) > b").text
         category = place.select_one(
             "div.list-text > div.list-text > div.text-muted.font-12 > font:nth-child(5) > b").text
+        tel = place.select_one(
+            "div.list-text > div.list-text > div.text-muted.font-12 > span:nth-child(7)").text
         address = place.select_one(
             "div.list-text > div.list-text > div.text-muted.font-12 > span:nth-child(9)").text
 
@@ -66,6 +70,8 @@ for i in range(4, 13):
                     "address": address,
                     "category": category,
                     "img_src": img_src,
+                    "a_href": a_href,
+                    "tel": tel,
                     "mapx": x,
                     "mapy": y}
                 db.foodlist.insert_one(doc)
