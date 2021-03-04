@@ -51,8 +51,8 @@ for i in range(4, 13):
 
         # Geocoding 연결
         headers = {
-            "X-NCP-APIGW-API-KEY-ID": "7byx1qe56r",
-            "X-NCP-APIGW-API-KEY": "uaDsC6DxP4EMYpy0vbcsFWg5RlsbkRmEMUh95cIb"
+            "X-NCP-APIGW-API-KEY-ID": "",
+            "X-NCP-APIGW-API-KEY": ""
         }
         r = requests.get(
             f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={address}", headers=headers)
