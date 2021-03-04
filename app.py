@@ -23,22 +23,39 @@ def home():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.member.find_one({"username": payload["id"]})
-        return render_template('index.html', user_info=user_info)
+        return render_template('result.html', user_info=user_info)
     except jwt.ExpiredSignatureError:
-        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+        return redirect(url_for("resultpage", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 @app.route('/login')
 def login():
-    msg = request.args.get("msg")
-    return render_template('index.html', msg = msg)
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.member.find_one({"username": payload["id"]})
+        return render_template('result.html', user_info=user_info)
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
 
 # 결과페이지, 진자 변수 넘기기
 @app.route('/resultpage')
 def main():
-    foodlist = list(fooddb.foodlist.find({}, {"_id": False}))
-    return render_template("result.html", foodlist = foodlist)
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.member.find_one({"username": payload["id"]})
+        foodlist = list(fooddb.foodlist.find({}, {"_id": False}))
+        return render_template("result.html", foodlist = foodlist, user_info = user_info)
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+    
 
 # 음식 리스트 반환 API
 @app.route('/result', methods=["GET"])
@@ -64,7 +81,7 @@ def sign_in():
             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        
+
         # 토큰 전달
         return jsonify({'result': 'success', 'token': token})
     # 찾지 못하면
@@ -79,11 +96,12 @@ def sign_up():
     #회원 가입
     username_receive = request.form['username_give']
     password_receive = request.form['password_give']
+    area_receive = request.form['area_give']
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     doc = {
         "username": username_receive,  # 아이디
         "password": password_hash,  # 비밀번호
-
+        "area": area_receive # 지역
     }
     db.member.insert_one(doc)
     return jsonify({'result': 'success'})
