@@ -60,4 +60,35 @@
       $('#food-atag').attr("href", a_href);
     }
 
-    get_food()
+
+    // function getPagination(page, size) {
+    //   $.ajax({
+    //     type: 'GET',
+    //     url: '/resultpage',
+    //     data: {
+    //       'page': page,
+    //       'size': size,
+    //     },
+    //     success: function (res){
+    //       if (res['result'] === 'success'){
+    //         let data = res['data']
+    //         let total = res['total']
+    //         drawPagination(total, page, size)
+    //       }
+    //     }
+    //   })
+    // }
+
+    // // 페이지네이션 그리기 함수
+    // function drawPagination(total, page, size) {
+    //   // 11개 데이터가 있을 때, size가 10이면 2page가 나와야하므로 올림
+    //   let totalPage = Math.ceil(tota / size)
+    //   console.log('total :', total, 'size :', size, 'totalPage :', totalPage)
+    // }
+    // let page = 1
+    // let size = 9
+    
+    $(documnet).ready(function() {
+      get_food()
+      // getPagination(page, size)
+    })

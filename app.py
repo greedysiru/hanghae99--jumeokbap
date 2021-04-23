@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import math
 import jwt
 import datetime
 import hashlib
@@ -49,7 +50,7 @@ def main():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.member.find_one({"username": payload["id"]})
-        foodlist = list(fooddb.foodlist.find({}, {"_id": False}))
+        foodlist = list(fooddb.foodlist.find({}, {"_id": False}))        
         return render_template("result.html", foodlist = foodlist, user_info = user_info)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
@@ -61,6 +62,7 @@ def main():
 @app.route('/result', methods=["GET"])
 def get_result():
     foods = list(fooddb.foodlist.find({}, {"_id": False}))
+  
 
     return jsonify({'result': 'success', 'foods': foods})
 
@@ -116,6 +118,20 @@ def check_dup():
     exists = bool(db.member.find_one({"username": username_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
+# 페이지네이션
+# @app.route('/resultpage', methods=['GET'])
+# def get_pagination_image():
+#     size = int(request.args.get('size', 10))
+#     page = int(request.args.get('page', 1))
+
+#     n_skip = size * (page - 1)
+#     print(f'size : {size} / page : {page} / skip : {n_skip}')
+#     foods_page = list(fooddb.foodlist.find({}, {'_id': False}).skip(n_skip).limit(size))
+#     total = fooddb.foodlist.count()
+#     print(f'total : {total}')
+#     print(image_list)
+
+#     return jsonify({'result': 'success', 'total': total, 'data': image_list})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
